@@ -40,14 +40,14 @@ export const CITIES: { label: string; city: string; state: string }[] = [
   { label: "Kangar", city: "Kangar", state: "Perlis" },
 ];
 
-export const PRAYER_LABELS: Record<string, { malay: string; arabic: string; icon: string }> = {
-  Imsak:   { malay: "Imsak",   arabic: "إمساك",  icon: "🌙" },
-  Fajr:    { malay: "Subuh",   arabic: "الفجر",  icon: "🌅" },
-  Sunrise: { malay: "Syuruk",  arabic: "الشروق", icon: "☀️" },
-  Dhuhr:   { malay: "Zohor",   arabic: "الظهر",  icon: "🌞" },
-  Asr:     { malay: "Asar",    arabic: "العصر",  icon: "🌤" },
-  Maghrib: { malay: "Maghrib", arabic: "المغرب", icon: "🌇" },
-  Isha:    { malay: "Isyak",   arabic: "العشاء", icon: "🌃" },
+export const PRAYER_LABELS: Record<string, { malay: string; english: string; arabic: string; icon: string }> = {
+  Imsak:   { malay: "Imsak",   english: "Imsak",    arabic: "إمساك",  icon: "🌙" },
+  Fajr:    { malay: "Subuh",   english: "Fajr",     arabic: "الفجر",  icon: "🌅" },
+  Sunrise: { malay: "Syuruk",  english: "Sunrise",  arabic: "الشروق", icon: "☀️" },
+  Dhuhr:   { malay: "Zohor",   english: "Dhuhr",    arabic: "الظهر",  icon: "🌞" },
+  Asr:     { malay: "Asar",    english: "Asr",      arabic: "العصر",  icon: "🌤" },
+  Maghrib: { malay: "Maghrib", english: "Maghrib",  arabic: "المغرب", icon: "🌇" },
+  Isha:    { malay: "Isyak",   english: "Isha",     arabic: "العشاء", icon: "🌃" },
 };
 
 // Cache keyed by "city::YYYY-MM-DD"

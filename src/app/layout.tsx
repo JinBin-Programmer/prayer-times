@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Script from "next/script";
 import Link from "next/link";
+import { LanguageProvider } from "@/contexts/LanguageContext";
+import LanguageToggle from "@/components/LanguageToggle";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://solat.merquri.com"),
@@ -38,38 +40,40 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="min-h-screen flex flex-col">
-        {/* Navbar */}
-        <nav className="sticky top-0 z-50 bg-indigo-950/80 backdrop-blur border-b border-white/10 shadow-sm">
-          <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 font-bold text-white text-lg">
-              <span className="text-2xl">🕌</span>
-              <span>Waktu Solat MY</span>
-            </Link>
-            <div className="flex items-center gap-4 text-sm font-medium text-indigo-200">
-              <Link href="/" className="hover:text-white transition-colors">Waktu Solat</Link>
-              <Link href="/about" className="hover:text-white transition-colors">About</Link>
-              <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy</Link>
+        <LanguageProvider>
+          {/* Navbar */}
+          <nav className="sticky top-0 z-50 bg-indigo-950/80 backdrop-blur border-b border-white/10 shadow-sm">
+            <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
+              <Link href="/" className="flex items-center gap-2 font-bold text-white text-lg">
+                <span className="text-2xl">🕌</span>
+                <span>Waktu Solat MY</span>
+              </Link>
+              <div className="flex items-center gap-3 text-sm font-medium text-indigo-200">
+                <Link href="/" className="hover:text-white transition-colors hidden sm:inline">Waktu Solat</Link>
+                <Link href="/about" className="hover:text-white transition-colors hidden sm:inline">About</Link>
+                <LanguageToggle />
+              </div>
             </div>
-          </div>
-        </nav>
+          </nav>
 
-        {/* Main content */}
-        <main className="flex-1">
-          {children}
-        </main>
+          {/* Main content */}
+          <main className="flex-1">
+            {children}
+          </main>
 
-        {/* Footer */}
-        <footer className="border-t border-white/10 bg-indigo-950/60 mt-10 py-6 text-center text-xs text-indigo-300 space-y-1">
-          <p>Prayer times sourced from <a href="https://aladhan.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-amber-400">Al Adhan API</a> · JAKIM method</p>
-          <div className="flex flex-wrap justify-center gap-3 mt-2">
-            <Link href="/about" className="hover:text-white">About</Link>
-            <span>·</span>
-            <Link href="/privacy-policy" className="hover:text-white">Privacy Policy</Link>
-            <span>·</span>
-            <Link href="/terms" className="hover:text-white">Terms of Service</Link>
-          </div>
-          <p className="mt-2">© {new Date().getFullYear()} Waktu Solat Malaysia · For reference only — verify with JAKIM</p>
-        </footer>
+          {/* Footer */}
+          <footer className="border-t border-white/10 bg-indigo-950/60 mt-10 py-6 text-center text-xs text-indigo-300 space-y-1">
+            <p>Prayer times sourced from <a href="https://aladhan.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-amber-400">Al Adhan API</a> · JAKIM method</p>
+            <div className="flex flex-wrap justify-center gap-3 mt-2">
+              <Link href="/about" className="hover:text-white">About</Link>
+              <span>·</span>
+              <Link href="/privacy-policy" className="hover:text-white">Privacy Policy</Link>
+              <span>·</span>
+              <Link href="/terms" className="hover:text-white">Terms of Service</Link>
+            </div>
+            <p className="mt-2">© {new Date().getFullYear()} Waktu Solat Malaysia · For reference only — verify with JAKIM</p>
+          </footer>
+        </LanguageProvider>
       </body>
     </html>
   );

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import type { PrayerData } from "@/lib/prayer";
 import { CITIES, PRAYER_LABELS } from "@/lib/prayer";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const PRAYER_ORDER = ["Imsak", "Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"] as const;
 
@@ -19,25 +20,25 @@ function nowMYTMinutes(): number {
 
 function getNextPrayer(timings: PrayerData["timings"]): string | null {
   const nowMin = nowMYTMinutes();
-  // Check prayers in order; skip Imsak for "next prayer" highlight
   const prayers = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"] as const;
   for (const p of prayers) {
     if (timeToMinutes(timings[p]) > nowMin) return p;
   }
-  return "Fajr"; // after Isha, next is Fajr tomorrow
+  return "Fajr";
 }
 
-function formatCountdown(nextPrayer: string, timings: PrayerData["timings"]): string {
+function formatCountdown(nextPrayer: string, timings: PrayerData["timings"], lang: "bm" | "en"): string {
   if (nextPrayer === "Fajr" && timeToMinutes(timings.Isha) > nowMYTMinutes()) {
-    // we're before Fajr today — handled below
+    // handled below
   }
   const nowMin = nowMYTMinutes();
   let targetMin = timeToMinutes(timings[nextPrayer as keyof typeof timings] ?? timings.Fajr);
-  if (targetMin <= nowMin) targetMin += 24 * 60; // tomorrow
+  if (targetMin <= nowMin) targetMin += 24 * 60;
   const diff = targetMin - nowMin;
   const h = Math.floor(diff / 60);
   const m = diff % 60;
-  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+  const hourUnit = lang === "bm" ? "j" : "h";
+  return h > 0 ? `${h}${hourUnit} ${m}m` : `${m}m`;
 }
 
 interface Props {
@@ -45,12 +46,12 @@ interface Props {
 }
 
 export default function PrayerDisplay({ initial }: Props) {
+  const { lang } = useLanguage();
   const [data, setData] = useState<PrayerData>(initial);
   const [selectedCity, setSelectedCity] = useState(initial.city);
   const [loading, setLoading] = useState(false);
   const [tick, setTick] = useState(0);
 
-  // Update countdown every minute
   useEffect(() => {
     const id = setInterval(() => setTick((t) => t + 1), 60_000);
     return () => clearInterval(id);
@@ -74,17 +75,16 @@ export default function PrayerDisplay({ initial }: Props) {
   };
 
   const nextPrayer = getNextPrayer(data.timings);
-  const countdown = nextPrayer ? formatCountdown(nextPrayer, data.timings) : "";
+  const countdown = nextPrayer ? formatCountdown(nextPrayer, data.timings, lang) : "";
 
-  // suppress unused tick warning
   void tick;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* City selector */}
       <div className="animate-in">
         <label className="block text-xs text-indigo-300 mb-1.5 font-medium uppercase tracking-wider">
-          Select City
+          {lang === "bm" ? "Pilih Bandar" : "Select City"}
         </label>
         <select
           value={selectedCity}
@@ -100,7 +100,7 @@ export default function PrayerDisplay({ initial }: Props) {
         </select>
       </div>
 
-      {/* Date header */}
+      {/* Date + next prayer header */}
       <div className="animate-in delay-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-4 flex flex-wrap items-center justify-between gap-2">
         <div>
           <div className="text-white font-semibold">{data.gregorian}</div>
@@ -109,11 +109,17 @@ export default function PrayerDisplay({ initial }: Props) {
           </div>
         </div>
         <div className="text-right">
-          <div className="text-xs text-indigo-300">Next prayer</div>
+          <div className="text-xs text-indigo-300">
+            {lang === "bm" ? "Solat seterusnya" : "Next prayer"}
+          </div>
           {nextPrayer && (
             <div className="text-amber-400 font-bold text-lg">
-              {PRAYER_LABELS[nextPrayer]?.malay ?? nextPrayer}{" "}
-              <span className="text-sm font-normal text-indigo-200">in {countdown}</span>
+              {lang === "bm"
+                ? (PRAYER_LABELS[nextPrayer]?.malay ?? nextPrayer)
+                : (PRAYER_LABELS[nextPrayer]?.english ?? nextPrayer)}{" "}
+              <span className="text-sm font-normal text-indigo-200">
+                {lang === "bm" ? "dalam" : "in"} {countdown}
+              </span>
             </div>
           )}
         </div>
@@ -125,6 +131,8 @@ export default function PrayerDisplay({ initial }: Props) {
           const label = PRAYER_LABELS[prayer];
           const time = data.timings[prayer as keyof typeof data.timings];
           const isNext = prayer === nextPrayer;
+          const prayerName = lang === "bm" ? label.malay : label.english;
+          const prayerSub = lang === "bm" ? label.arabic : label.malay;
 
           return (
             <div
@@ -140,10 +148,10 @@ export default function PrayerDisplay({ initial }: Props) {
                 <span className="text-2xl w-8 text-center">{label.icon}</span>
                 <div>
                   <div className={`font-bold text-base ${isNext ? "text-amber-300" : "text-white"}`}>
-                    {label.malay}
+                    {prayerName}
                   </div>
                   <div className={`text-xs ${isNext ? "text-amber-400/70" : "text-indigo-300"}`}>
-                    {label.arabic}
+                    {prayerSub}
                   </div>
                 </div>
               </div>
@@ -157,7 +165,7 @@ export default function PrayerDisplay({ initial }: Props) {
 
       {loading && (
         <div className="text-center text-sm text-indigo-300 animate-pulse">
-          Fetching prayer times…
+          {lang === "bm" ? "Memuatkan waktu solat…" : "Fetching prayer times…"}
         </div>
       )}
     </div>
