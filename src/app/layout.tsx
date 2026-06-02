@@ -6,7 +6,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://solat.merquri.com"),
+  metadataBase: new URL("https://solat.themalaysianinfo.online"),
   title: {
     default: "Waktu Solat Malaysia — Prayer Times",
     template: "%s — Waktu Solat Malaysia",
